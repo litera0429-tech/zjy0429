@@ -3,17 +3,17 @@
 """肘子鱼独立站 · 发布脚本（本地后台 + OSS 图床直连 + Netlify 静态部署）
 
 做四件事：
-  1) 压缩：works.json / site.json 引用的图片等比缩放（长边 2400px）+ 转 WebP（q80）
-  2) 上传：把压缩后的图片传到阿里云 OSS（密钥读 .env，绝不进 git）
-  3) 改写：发布前把 JSON/HTML/JS 里的图片引用统一改为 OSS 绝对地址（带版本号）
-  4) 发布：提交 JSON 与配置到 git 并 push，Netlify 自动重新部署
+  1) 压缩：works.json / site.json 引用的图片等比缩放（长边 2048px）+ 转 WebP（q78）
+  2) 入库：压缩后的 WebP/JPG 直接提交进 git 仓库（images/ 不再是忽略目录）
+  3) 改写：发布前把 JSON/HTML/JS 里的图片引用统一改为相对路径 + 版本号
+  4) 发布：提交内容与图片到 git 并 push，Netlify 自动重新部署并提供图片
 
 用法：
   python3 publish.py --dry-run       只预览要做什么，不改任何文件
-  python3 publish.py                 完整发布（压缩 + 上传 OSS + 改写引用 + git push）
-  python3 publish.py --skip-upload   只压缩 + 改写 + git 提交，先不上传
+  python3 publish.py                 完整发布（压缩 + 改写引用 + 提交图片 + git push）
   python3 publish.py --clean-only    只删除未被网站引用的本地图片，不做其他事
   python3 publish.py --hotlink       给 OSS 设置 Referer 防盗链白名单
+  python3 publish.py --cache         给 OSS 上所有对象补长缓存头（仅历史备份用）
 """
 
 import io
@@ -37,8 +37,8 @@ CONTENT_DIR = os.path.join(ROOT, "content")
 UPLOAD_DIR = os.path.join(ROOT, "images", "uploads")
 STATE_PATH = os.path.join(ROOT, ".publish-state.json")
 
-MAX_EDGE = 2400          # 长边压缩到 2400px（与后台上传压缩一致，保证观感）
-WEBP_Q = 80              # WebP 质量
+MAX_EDGE = 2048          # 长边压缩到 2048px（保证观感同时控制体积）
+WEBP_Q = 78              # WebP 质量
 
 
 def load_env_file(path):
@@ -172,14 +172,12 @@ def to_local(ref):
     return ref
 
 
-def absolutize_ref(ref):
-    """本地相对引用 -> OSS 绝对地址，带内容版本号（保证更新后缓存立即失效）。"""
+def versioned_ref(ref):
+    """图片引用 -> 相对路径 + 版本号（?v=文件修改时间，保证更新后缓存立即失效）。"""
     base = cdn_base()
-    if not base:
-        return ref
     path = os.path.join(ROOT, ref)
     v = int(os.path.getmtime(path)) if os.path.exists(path) else 1
-    return "%s/%s?v=%d" % (base, ref, v)
+    return "%s?v=%d" % (ref, v)
 
 
 def rewrite_refs(o, ref_map):
@@ -191,7 +189,7 @@ def rewrite_refs(o, ref_map):
         local = to_local(o)
         if local.startswith("images/") or local == "cover.mp4":
             final = ref_map.get(local, local)
-            return absolutize_ref(final)
+            return versioned_ref(final)
     return o
 
 
@@ -203,7 +201,7 @@ TEXT_FILES = [
 
 
 def absolutize_text(ref_map, dry_run):
-    """把 HTML/JS 里写死的本地图片引用统一改成 OSS 绝对地址（带版本号）。"""
+    """把 HTML/JS 里写死的图片引用统一改成相对路径 + 版本号。"""
     base = cdn_base()
     prefix = (re.escape(base) + "/") if base else ""
     pat = re.compile(
@@ -220,7 +218,7 @@ def absolutize_text(ref_map, dry_run):
         def repl(m):
             ref = to_local(m.group(2))
             final = ref_map.get(ref, ref)
-            return m.group(1) + absolutize_ref(final) + m.group(3)
+            return m.group(1) + versioned_ref(final) + m.group(3)
 
         new = pat.sub(repl, text)
         if new != text:
@@ -229,7 +227,7 @@ def absolutize_text(ref_map, dry_run):
                 with open(path, "w", encoding="utf-8") as f:
                     f.write(new)
     if changed:
-        print("[引用] %d 个页面/脚本已改为 OSS 直连地址（带版本号）：%s" % (
+        print("[引用] %d 个页面/脚本已改为相对路径 + 版本号：%s" % (
             len(changed), ", ".join(changed)))
     return changed
 
@@ -325,7 +323,7 @@ def unreferenced_uploads(final_refs):
 def git_publish(dry_run):
     files = [
         "content", "netlify.toml", "publish.py", "server.py",
-        "index.html", "about.html", "404.html", "js",
+        "index.html", "about.html", "404.html", "js", "images",
     ]
     if dry_run:
         print("[预览] git 将提交：%s" % ", ".join(files))
@@ -495,7 +493,7 @@ def main():
     else:
         print("[压缩] 没有需要压缩的图片")
 
-    # 更新 JSON：相对路径 -> OSS 绝对地址（带版本号）；WebP 扩展名变化一并处理
+    # 更新 JSON：图片引用 -> 相对路径 + 版本号；WebP 扩展名变化一并处理
     if not dry_run:
         write_json(os.path.join(CONTENT_DIR, "works.json"), rewrite_refs(works, ref_map))
         write_json(os.path.join(CONTENT_DIR, "site.json"), rewrite_refs(site, ref_map))
@@ -526,13 +524,9 @@ def main():
         print("清理完成（预览模式请用 --dry-run）" if dry_run else "清理完成")
         return
 
-    if not skip_upload:
-        upload_to_oss(media_files(final_refs), state, dry_run)
-        if not dry_run:
-            save_state(state)
     git_publish(dry_run)
 
-    print("完成%s" % ("（预览，未改动任何文件）" if dry_run else "。图片已改为 OSS 直连地址（带版本号，1 年缓存不影响更新）"))
+    print("完成%s" % ("（预览，未改动任何文件）" if dry_run else "。图片已入库，Netlify 将直接提供并自动部署"))
 
 
 if __name__ == "__main__":

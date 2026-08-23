@@ -33,3 +33,9 @@
   to = "/404.html"
   status = 404
   force = true
+
+# 图片直接由 Netlify 从仓库提供；带 ?v= 版本号，1 年缓存不影响更新
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

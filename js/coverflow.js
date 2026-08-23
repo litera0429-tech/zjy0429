@@ -8,7 +8,7 @@
      正常情况由 content/site.json 的 carousel 数组驱动。 */
   var DEFAULT_CAROUSEL = [
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_163038_1728.jpg?v=1787041838",
+      src: "images/uploads/u_20260818_163038_1728.jpg?v=1787041838",
       alt: "华欣的海风，蓝色的海边少年",
       title: "Tailed",
       subtitle: "date：2026",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_163110_8829.jpg?v=1",
+      src: "images/uploads/u_20260818_163110_8829.jpg?v=1",
       alt: "涩谷之夜",
       title: "Tokyo",
       subtitle: "date：2026",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_163146_2586.jpg?v=1",
+      src: "images/uploads/u_20260818_163146_2586.jpg?v=1",
       alt: "亲爱的藤井树小姐 此刻我正在喜欢你",
       title: "北海道",
       subtitle: "date：2026",
@@ -38,7 +38,7 @@
       ]
     },
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_163218_9960.jpg?v=1",
+      src: "images/uploads/u_20260818_163218_9960.jpg?v=1",
       alt: "迪庆 晚安",
       title: "滇藏",
       subtitle: "date：2025",
@@ -48,7 +48,7 @@
       ]
     },
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_165031_6526.png?v=1",
+      src: "images/uploads/u_20260818_165031_6526.png?v=1",
       alt: "祁连山脉劈开戈壁和草原",
       title: "青甘疆",
       subtitle: "date：2024",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      src: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/uploads/u_20260818_163342_7298.jpg?v=1",
+      src: "images/uploads/u_20260818_163342_7298.jpg?v=1",
       alt: "From conflict to peace.",
       title: "大雷山",
       subtitle: "date：2025",

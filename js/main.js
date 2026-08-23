@@ -3,14 +3,14 @@
 
   /* 默认站点内容：请求 content/site.json 失败时兜底（例如直接双击打开页面） */
   var DEFAULT_SITE = {
-    heroImage: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/home/hero.jpg?v=1785977859",
+    heroImage: "images/home/hero.jpg?v=1785977859",
     heroTitle: "肘子鱼",
     heroSubtitle: "用镜头收藏世界的每个瞬间",
     aboutPhilosophy:
       "我相信摄影不是记录，而是选择——选择光线、角度与瞬间，把喧闹的世界裁成一张安静的画。",
     aboutExperience:
       "资深摄影爱好者，足迹遍布东京、北海道、泰国等地；长期从事商业摄影与影像创作。",
-    aboutImage: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/commercial/photo/02.jpg?v=1785977896",
+    aboutImage: "images/commercial/photo/02.jpg?v=1785977896",
     contactEmail: "litera0429@gmail.com",
     footerXhs: "待补充",
     home: {
@@ -35,16 +35,16 @@
 
   /* ---------- 共享：作品默认数据 / 工具（请求 content/works.json 失败时兜底） ---------- */
   var DEFAULT_WORKS = [
-    { title: "涩谷的夜", group: "adventure", category: "东京", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/01.jpg?v=1785977863", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/01.jpg?v=1785977863", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/02.jpg?v=1785977869", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/03.jpg?v=1785996931"], description: "霓虹与人群交织的十字路口。" },
-    { title: "浅草清晨", group: "adventure", category: "东京", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/02.jpg?v=1785977869", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/04.jpg?v=1785996937", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/05.jpg?v=1785996941", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/tokyo/06.jpg?v=1785996947"], description: "晨光里安静下来的老街。" },
-    { title: "雪国列车", group: "adventure", category: "北海道", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/01.jpg?v=1785977873", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/01.jpg?v=1785977873", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/02.jpg?v=1785977877", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/03.jpg?v=1785996951"], description: "窗外是一望无际的白色旷野。" },
-    { title: "小樽运河", group: "adventure", category: "北海道", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/02.jpg?v=1785977877", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/04.jpg?v=1785996957", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/05.jpg?v=1785996961", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/hokkaido/06.jpg?v=1785996968"], description: "入夜后的运河与灯火。" },
-    { title: "清迈的午后", group: "adventure", category: "泰国", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/01.jpg?v=1785977883", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/01.jpg?v=1785977883", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/02.jpg?v=1785977887", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/03.jpg?v=1785996972"], description: "热带阳光下缓慢流动的时间。" },
-    { title: "曼谷天际线", group: "adventure", category: "泰国", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/02.jpg?v=1785977887", images: ["https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/04.jpg?v=1785996978", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/05.jpg?v=1785996982", "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/adventure/thailand/06.jpg?v=1785996988"], description: "黄昏把城市染成一片金色。" },
-    { title: "腕表静物", group: "business", category: "photo", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/commercial/photo/01.jpg?v=1785977892", description: "商业产品摄影 · 腕表系列。" },
-    { title: "棚拍人像", group: "business", category: "photo", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/commercial/photo/02.jpg?v=1785977896", description: "商业人像 · 影棚拍摄。" },
-    { title: "MV · 城市夜景", group: "business", category: "视频mv", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/commercial/video/01.jpg?v=1785977899", description: "音乐录像带 · 城市夜景片段。" },
-    { title: "MV · 海风", group: "business", category: "视频mv", image: "https://litera0429.oss-cn-hangzhou.aliyuncs.com/images/commercial/video/02.jpg?v=1785977903", description: "音乐录像带 · 海边片段。" }
+    { title: "涩谷的夜", group: "adventure", category: "东京", image: "images/adventure/tokyo/01.jpg?v=1785977863", images: ["images/adventure/tokyo/01.jpg?v=1785977863", "images/adventure/tokyo/02.jpg?v=1785977869", "images/adventure/tokyo/03.jpg?v=1785996931"], description: "霓虹与人群交织的十字路口。" },
+    { title: "浅草清晨", group: "adventure", category: "东京", image: "images/adventure/tokyo/02.jpg?v=1785977869", images: ["images/adventure/tokyo/04.jpg?v=1785996937", "images/adventure/tokyo/05.jpg?v=1785996941", "images/adventure/tokyo/06.jpg?v=1785996947"], description: "晨光里安静下来的老街。" },
+    { title: "雪国列车", group: "adventure", category: "北海道", image: "images/adventure/hokkaido/01.jpg?v=1785977873", images: ["images/adventure/hokkaido/01.jpg?v=1785977873", "images/adventure/hokkaido/02.jpg?v=1785977877", "images/adventure/hokkaido/03.jpg?v=1785996951"], description: "窗外是一望无际的白色旷野。" },
+    { title: "小樽运河", group: "adventure", category: "北海道", image: "images/adventure/hokkaido/02.jpg?v=1785977877", images: ["images/adventure/hokkaido/04.jpg?v=1785996957", "images/adventure/hokkaido/05.jpg?v=1785996961", "images/adventure/hokkaido/06.jpg?v=1785996968"], description: "入夜后的运河与灯火。" },
+    { title: "清迈的午后", group: "adventure", category: "泰国", image: "images/adventure/thailand/01.jpg?v=1785977883", images: ["images/adventure/thailand/01.jpg?v=1785977883", "images/adventure/thailand/02.jpg?v=1785977887", "images/adventure/thailand/03.jpg?v=1785996972"], description: "热带阳光下缓慢流动的时间。" },
+    { title: "曼谷天际线", group: "adventure", category: "泰国", image: "images/adventure/thailand/02.jpg?v=1785977887", images: ["images/adventure/thailand/04.jpg?v=1785996978", "images/adventure/thailand/05.jpg?v=1785996982", "images/adventure/thailand/06.jpg?v=1785996988"], description: "黄昏把城市染成一片金色。" },
+    { title: "腕表静物", group: "business", category: "photo", image: "images/commercial/photo/01.jpg?v=1785977892", description: "商业产品摄影 · 腕表系列。" },
+    { title: "棚拍人像", group: "business", category: "photo", image: "images/commercial/photo/02.jpg?v=1785977896", description: "商业人像 · 影棚拍摄。" },
+    { title: "MV · 城市夜景", group: "business", category: "视频mv", image: "images/commercial/video/01.jpg?v=1785977899", description: "音乐录像带 · 城市夜景片段。" },
+    { title: "MV · 海风", group: "business", category: "视频mv", image: "images/commercial/video/02.jpg?v=1785977903", description: "音乐录像带 · 海边片段。" }
   ];
 
   var worksPromise = null;
