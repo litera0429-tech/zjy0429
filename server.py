@@ -364,7 +364,15 @@ class SiteHandler(SimpleHTTPRequestHandler):
             if max(im.size) > MAX_EDGE:
                 im = im.copy()
                 im.thumbnail((MAX_EDGE, MAX_EDGE), Image.LANCZOS)
-            im.save(dst, "WEBP", quality=WEBP_Q, method=4)
+            data = None
+            for q in (WEBP_Q, 80, 72, 64):
+                buf = io.BytesIO()
+                im.save(buf, "WEBP", quality=q, method=4)
+                data = buf.getvalue()
+                if len(data) <= 800 * 1024:
+                    break
+            with open(dst, "wb") as f:
+                f.write(data)
             return os.path.exists(dst)
         except Exception:
             try:

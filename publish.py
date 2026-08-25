@@ -44,6 +44,7 @@ STATE_PATH = os.path.join(ROOT, ".publish-state.json")
 
 MAX_EDGE = 2400          # 长边压缩到 2400px（保证观感）
 WEBP_Q = 85              # WebP 质量
+MAX_WEBP_BYTES = 800 * 1024  # 单张 WebP 上限：控制平均体积在 400KB 左右
 VARIANT_WIDTHS = [480, 800, 1200]
 
 
@@ -138,6 +139,18 @@ def content_type(ref):
     return mimetypes.guess_type(ref)[0] or "application/octet-stream"
 
 
+def encode_webp(im2, max_bytes=MAX_WEBP_BYTES):
+    """按质量阶梯压缩，保证单张不超过 max_bytes（优先高质量，超限自动降质）。"""
+    data = None
+    for q in (WEBP_Q, 80, 72, 64):
+        buf = io.BytesIO()
+        im2.save(buf, "WEBP", quality=q, method=4)
+        data = buf.getvalue()
+        if len(data) <= max_bytes:
+            break
+    return data
+
+
 def optimize(src_path, ref, out_dir, dry_run, force=False):
     """等比缩放（长边 MAX_EDGE）+ 转 WebP。返回 (final_ref, new_size, converted, changed)。
     GIF 动图不做转换；转换后反而更大的保留原图。"""
@@ -167,9 +180,7 @@ def optimize(src_path, ref, out_dir, dry_run, force=False):
         im2 = im.copy()
         im2.thumbnail((MAX_EDGE, MAX_EDGE), Image.LANCZOS)
 
-    buf = io.BytesIO()
-    im2.save(buf, "WEBP", quality=WEBP_Q, method=4)
-    data = buf.getvalue()
+    data = encode_webp(im2)
     old_size = os.path.getsize(src_path)
     final = base + ".webp"
     if data and len(data) < old_size:
@@ -617,6 +628,14 @@ def main():
     if attempted:
         print("[压缩] 引用图片合计：%.1fMB → 约 %.1fMB（%d 张需要处理）" % (
             attempted_old / 1e6, attempted_new / 1e6, attempted))
+    webp_sizes = [
+        os.path.getsize(os.path.join(ROOT, ref_map[r]))
+        for r in refs
+        if ref_map[r].endswith(".webp") and os.path.exists(os.path.join(ROOT, ref_map[r]))
+    ]
+    if webp_sizes:
+        print("[体积] WebP 平均 %.0fKB，最大 %.0fKB" % (
+            sum(webp_sizes) / len(webp_sizes) / 1024, max(webp_sizes) / 1024))
     if pending:
         print("[压缩] 待压缩/转换 %d 张：约 %.1fMB → %.1fMB" % (
             len(pending), total_old / 1e6, total_new / 1e6))
