@@ -37,8 +37,8 @@ CONTENT_DIR = os.path.join(ROOT, "content")
 UPLOAD_DIR = os.path.join(ROOT, "images", "uploads")
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif"}
 MAX_UPLOAD = 60 * 1024 * 1024
-MAX_EDGE = 2400  # 大图长边压缩到 2400px（保持原比例）
-WEBP_Q = 85       # WebP 质量
+MASTER_EDGE = 5000  # 高清母版长边上限（等比缩放，不放大）
+MASTER_Q = 92       # 高清母版 JPEG 质量（约 3-4MB）
 
 
 def read_json(path):
@@ -326,21 +326,21 @@ class SiteHandler(SimpleHTTPRequestHandler):
         compressed = False
 
         if ext in (".jpg", ".jpeg", ".png", ".heic", ".heif"):
-            # 等比缩放（长边 MAX_EDGE）+ 转 WebP；只有更小才用转换结果
+            # 高清母版：等比缩放（长边 MASTER_EDGE）+ 转 JPG（MASTER_Q，约 3-4MB）
             tmp_in = os.path.join(tempfile.gettempdir(), "zzup_" + name + ext)
-            tmp_out = os.path.join(tempfile.gettempdir(), "zzup_out_" + name + ".webp")
+            tmp_out = os.path.join(tempfile.gettempdir(), "zzup_out_" + name + ".jpg")
             try:
                 with open(tmp_in, "wb") as out:
                     out.write(data)
-                ok = self._compress_to_webp(tmp_in, tmp_out)
-                if ok and os.path.exists(tmp_out) and os.path.getsize(tmp_out) < len(data):
-                    final_name = name + ".webp"
+                ok = self._make_master(tmp_in, tmp_out)
+                final_name = name + ".jpg"
+                final_path = os.path.join(UPLOAD_DIR, final_name)
+                if ok and os.path.exists(tmp_out):
+                    shutil.copyfile(tmp_out, final_path)
                     compressed = True
                 else:
-                    final_name = name + ext
-                final_path = os.path.join(UPLOAD_DIR, final_name)
-                with open(tmp_out if compressed else tmp_in, "rb") as fin, open(final_path, "wb") as fout:
-                    shutil.copyfileobj(fin, fout)
+                    with open(final_path, "wb") as out:
+                        out.write(data)
             finally:
                 for p in (tmp_in, tmp_out):
                     try:
@@ -356,28 +356,29 @@ class SiteHandler(SimpleHTTPRequestHandler):
 
         return self._json({"ok": True, "path": "images/uploads/" + final_name, "compressed": compressed})
 
-    def _compress_to_webp(self, src, dst):
-        """等比缩放 + 转 WebP：优先 PIL；HEIF 等格式 PIL 打不开时用 sips 兜底。"""
+    def _make_master(self, src, dst):
+        """高清母版：等比缩放（长边 MASTER_EDGE）+ 转 JPG（MASTER_Q）。
+        优先 PIL；HEIF 等格式 PIL 打不开时用 sips 兜底。"""
         try:
             from PIL import Image, ImageOps
             im = ImageOps.exif_transpose(Image.open(src))
-            if max(im.size) > MAX_EDGE:
+            if im.mode in ("RGBA", "LA", "P"):
+                bg = Image.new("RGB", im.size, (255, 255, 255))
+                im = im.convert("RGBA")
+                bg.paste(im, mask=im.split()[-1])
+                im = bg
+            else:
+                im = im.convert("RGB")
+            if max(im.size) > MASTER_EDGE:
                 im = im.copy()
-                im.thumbnail((MAX_EDGE, MAX_EDGE), Image.LANCZOS)
-            data = None
-            for q in (WEBP_Q, 80, 72, 64):
-                buf = io.BytesIO()
-                im.save(buf, "WEBP", quality=q, method=4)
-                data = buf.getvalue()
-                if len(data) <= 800 * 1024:
-                    break
-            with open(dst, "wb") as f:
-                f.write(data)
+                im.thumbnail((MASTER_EDGE, MASTER_EDGE), Image.LANCZOS)
+            im.save(dst, "JPEG", quality=MASTER_Q, optimize=True, progressive=True)
             return os.path.exists(dst)
         except Exception:
             try:
                 subprocess.run(
-                    ["sips", "-Z", str(MAX_EDGE), "-s", "format", "webp", src, "--out", dst],
+                    ["sips", "-Z", str(MASTER_EDGE), "-s", "format", "jpeg",
+                     "-s", "formatOptions", str(MASTER_Q), src, "--out", dst],
                     check=True,
                     capture_output=True,
                     timeout=300,
