@@ -37,8 +37,8 @@ CONTENT_DIR = os.path.join(ROOT, "content")
 UPLOAD_DIR = os.path.join(ROOT, "images", "uploads")
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 MAX_UPLOAD = 60 * 1024 * 1024
-MAX_EDGE = 2048  # 大图长边压缩到 2048px（保持原比例）
-WEBP_Q = 78       # WebP 质量
+MAX_EDGE = 2400  # 大图长边压缩到 2400px（保持原比例）
+WEBP_Q = 85       # WebP 质量
 
 
 def read_json(path):

@@ -8,7 +8,7 @@
      正常情况由 content/site.json 的 carousel 数组驱动。 */
   var DEFAULT_CAROUSEL = [
     {
-      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163038_1728.jpg?v=1787041838",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163038_1728.webp?v=1787632420",
       alt: "华欣的海风，蓝色的海边少年",
       title: "Tailed",
       subtitle: "date：2026",

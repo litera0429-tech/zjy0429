@@ -41,8 +41,8 @@ CONTENT_DIR = os.path.join(ROOT, "content")
 UPLOAD_DIR = os.path.join(ROOT, "images", "uploads")
 STATE_PATH = os.path.join(ROOT, ".publish-state.json")
 
-MAX_EDGE = 2048          # 长边压缩到 2048px（保证观感同时控制体积）
-WEBP_Q = 78              # WebP 质量
+MAX_EDGE = 2400          # 长边压缩到 2400px（保证观感）
+WEBP_Q = 85              # WebP 质量
 VARIANT_WIDTHS = [480, 800, 1200]
 
 
