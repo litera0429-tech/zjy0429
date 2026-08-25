@@ -8,7 +8,7 @@
      正常情况由 content/site.json 的 carousel 数组驱动。 */
   var DEFAULT_CAROUSEL = [
     {
-      src: "images/uploads/u_20260818_163038_1728.jpg?v=1787041838",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163038_1728.jpg?v=1787041838",
       alt: "华欣的海风，蓝色的海边少年",
       title: "Tailed",
       subtitle: "date：2026",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      src: "images/uploads/u_20260818_163110_8829.jpg?v=1",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163110_8829.jpg?v=1",
       alt: "涩谷之夜",
       title: "Tokyo",
       subtitle: "date：2026",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      src: "images/uploads/u_20260818_163146_2586.jpg?v=1",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163146_2586.jpg?v=1",
       alt: "亲爱的藤井树小姐 此刻我正在喜欢你",
       title: "北海道",
       subtitle: "date：2026",
@@ -38,7 +38,7 @@
       ]
     },
     {
-      src: "images/uploads/u_20260818_163218_9960.jpg?v=1",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163218_9960.jpg?v=1",
       alt: "迪庆 晚安",
       title: "滇藏",
       subtitle: "date：2025",
@@ -48,7 +48,7 @@
       ]
     },
     {
-      src: "images/uploads/u_20260818_165031_6526.png?v=1",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_165031_6526.png?v=1",
       alt: "祁连山脉劈开戈壁和草原",
       title: "青甘疆",
       subtitle: "date：2024",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      src: "images/uploads/u_20260818_163342_7298.jpg?v=1",
+      src: "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163342_7298.jpg?v=1",
       alt: "From conflict to peace.",
       title: "大雷山",
       subtitle: "date：2025",
@@ -319,12 +319,14 @@
       d.setAttribute("aria-label", "第 " + (i + 1) + " 张，共 " + count + " 张");
       var img = document.createElement("img");
       img.src = s.src;
-      var enc = encodeURIComponent("/" + s.src);
-      img.srcset = [480, 800, 1200]
+      var srcset = [480, 800, 1200]
         .map(function (w) {
-          return "/.netlify/images?url=" + enc + "&w=" + w + " " + w + "w";
+          var m = s.src.match(/^(.+?)(\.(?:webp|jpe?g|png|gif))(\?v=\d+)?$/i);
+          return m ? m[1] + "." + w + ".webp" + (m[3] || "") + " " + w + "w" : "";
         })
+        .filter(Boolean)
         .join(", ");
+      img.srcset = srcset;
       img.sizes = "(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw";
       var lm = s.src.match(/^(.+?)(\?v=\d+)?$/);
       var lq = lm[1].replace(/\.(webp|jpe?g|png|gif)$/i, ".lqip.webp") + (lm[2] || "");
@@ -334,9 +336,7 @@
       );
       img.alt = s.alt || "";
       img.draggable = false;
-      if (i > 0) {
-        img.loading = "lazy";
-      } else {
+      if (i === 0) {
         img.setAttribute("fetchpriority", "high");
       }
       d.appendChild(img);
