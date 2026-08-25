@@ -35,7 +35,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.join(ROOT, "content")
 UPLOAD_DIR = os.path.join(ROOT, "images", "uploads")
-ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif"}
 MAX_UPLOAD = 60 * 1024 * 1024
 MAX_EDGE = 2400  # 大图长边压缩到 2400px（保持原比例）
 WEBP_Q = 85       # WebP 质量
@@ -325,7 +325,7 @@ class SiteHandler(SimpleHTTPRequestHandler):
         )
         compressed = False
 
-        if ext in (".jpg", ".jpeg", ".png"):
+        if ext in (".jpg", ".jpeg", ".png", ".heic", ".heif"):
             # 等比缩放（长边 MAX_EDGE）+ 转 WebP；只有更小才用转换结果
             tmp_in = os.path.join(tempfile.gettempdir(), "zzup_" + name + ext)
             tmp_out = os.path.join(tempfile.gettempdir(), "zzup_out_" + name + ".webp")
@@ -357,7 +357,7 @@ class SiteHandler(SimpleHTTPRequestHandler):
         return self._json({"ok": True, "path": "images/uploads/" + final_name, "compressed": compressed})
 
     def _compress_to_webp(self, src, dst):
-        """用 PIL 等比缩放（长边 MAX_EDGE）+ 转 WebP（质量 WEBP_Q）。"""
+        """等比缩放 + 转 WebP：优先 PIL；HEIF 等格式 PIL 打不开时用 sips 兜底。"""
         try:
             from PIL import Image, ImageOps
             im = ImageOps.exif_transpose(Image.open(src))
@@ -367,7 +367,16 @@ class SiteHandler(SimpleHTTPRequestHandler):
             im.save(dst, "WEBP", quality=WEBP_Q, method=4)
             return os.path.exists(dst)
         except Exception:
-            return False
+            try:
+                subprocess.run(
+                    ["sips", "-Z", str(MAX_EDGE), "-s", "format", "webp", src, "--out", dst],
+                    check=True,
+                    capture_output=True,
+                    timeout=300,
+                )
+                return os.path.exists(dst)
+            except Exception:
+                return False
 
     def _handle_site(self, body):
         data = json.loads(body.decode("utf-8") or "{}")
