@@ -13,6 +13,7 @@
   python3 publish.py --dry-run       只预览要做什么，不改任何文件
   python3 publish.py                 完整发布（压缩 + 变体 + 上传 COS + 改写引用 + git push）
   python3 publish.py --skip-upload   只压缩/改写/提交，不上传 COS
+  python3 publish.py --force         强制用同名原图（jpg/png）重新高质量压缩
   python3 publish.py --clean-only    只删除未被网站引用的本地图片，不做其他事
   python3 publish.py --hotlink       给 OSS 设置 Referer 防盗链白名单
   python3 publish.py --cache         给 OSS 上所有对象补长缓存头（仅历史备份用）
@@ -137,13 +138,21 @@ def content_type(ref):
     return mimetypes.guess_type(ref)[0] or "application/octet-stream"
 
 
-def optimize(src_path, ref, out_dir, dry_run):
+def optimize(src_path, ref, out_dir, dry_run, force=False):
     """等比缩放（长边 MAX_EDGE）+ 转 WebP。返回 (final_ref, new_size, converted, changed)。
     GIF 动图不做转换；转换后反而更大的保留原图。"""
     ext = os.path.splitext(ref)[1].lower()
     base = os.path.splitext(ref)[0]
     if ext == ".gif" or Image is None:
         return ref, None, False, False
+    # --force：WebP 优先改用同名的原图 jpg/png 重新编码，提升质量
+    if force and ext == ".webp":
+        for e in (".jpg", ".jpeg", ".png"):
+            cand = base + e
+            if os.path.exists(os.path.join(ROOT, cand)):
+                src_path = os.path.join(ROOT, cand)
+                ext = e
+                break
     try:
         im = ImageOps.exif_transpose(Image.open(src_path))
     except Exception:
@@ -536,6 +545,9 @@ def main():
     clean_only = "--clean-only" in sys.argv
     set_cache = "--cache" in sys.argv
     hotlink = "--hotlink" in sys.argv
+    force = "--force" in sys.argv
+    if force:
+        print("[重压] 强制用同名原图重新压缩（%s）" % ("预览" if dry_run else "执行"))
 
     if set_cache:
         set_cache_headers()
@@ -588,7 +600,7 @@ def main():
         if not os.path.exists(src):
             continue
         old = os.path.getsize(src)
-        final, new_size, converted, changed = optimize(src, ref, UPLOAD_DIR, dry_run)
+        final, new_size, converted, changed = optimize(src, ref, UPLOAD_DIR, dry_run, force)
         if new_size is not None:
             attempted += 1
             attempted_old += old

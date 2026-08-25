@@ -1,10 +1,10 @@
 {
-  "heroImage": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/home/hero.webp?v=1787291240",
+  "heroImage": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/home/hero.webp?v=1787634587",
   "heroTitle": "肘子鱼",
   "heroSubtitle": "用镜头收藏世界的每个瞬间",
   "aboutPhilosophy": " 很喜欢《排球少年》里乌养一繫的一句话，“正因为没有翅膀，人们才去寻找飞翔的方法”。我会一直寻找知识、技能、品质的羽毛，去更远的地方，我想我会一直自由。\n\n",
   "aboutExperience": "肘子鱼\n2004年，现居杭州\n摄影/胶片爱好者 \nvibe coding/视觉设计\n",
-  "aboutImage": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260813_162404_9460.webp?v=1787489181",
+  "aboutImage": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260813_162404_9460.webp?v=1787634616",
   "contactEmail": "litera0429@gmail.com",
   "footerXhs": "待补充",
   "carousel": [
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163110_8829.webp?v=1787489364",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163110_8829.webp?v=1787634832",
       "alt": "涩谷之夜",
       "title": "Tokyo",
       "subtitle": "date：2026",
@@ -41,7 +41,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163146_2586.webp?v=1787489364",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163146_2586.webp?v=1787634832",
       "alt": "亲爱的藤井树小姐 此刻我正在喜欢你",
       "title": "北海道",
       "subtitle": "date：2026",
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163218_9960.webp?v=1787489364",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163218_9960.webp?v=1787634832",
       "alt": "迪庆 晚安",
       "title": "滇藏",
       "subtitle": "date：2025",
@@ -73,7 +73,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_165031_6526.webp?v=1787489365",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_165031_6526.webp?v=1787634833",
       "alt": "祁连山脉劈开戈壁和草原",
       "title": "青甘疆",
       "subtitle": "date：2024",
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163342_7298.webp?v=1787489365",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163342_7298.webp?v=1787634833",
       "alt": "From conflict to peace.",
       "title": "大雷山",
       "subtitle": "date：2025",
@@ -105,7 +105,7 @@
       ]
     },
     {
-      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163238_4418.webp?v=1787489365",
+      "src": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_163238_4418.webp?v=1787634833",
       "alt": "内蒙",
       "title": "内蒙",
       "subtitle": "date：2026",
@@ -124,33 +124,33 @@
   "home": {
     "scroll01": [
       {
-        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_141844_4034.webp?v=1787489349",
+        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_141844_4034.webp?v=1787634815",
         "title": "Independence",
         "description": "一个人也可以\nYou alone are enough"
       },
       {
-        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_141902_9799.webp?v=1787489350",
+        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_141902_9799.webp?v=1787634816",
         "title": "Fearless Innovation",
         "description": "很多人停在0和1\nMany stop at 0 and 1, but the real journey starts from 1 to ∞."
       },
       {
-        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_112007_6401.webp?v=1787489365",
+        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_112007_6401.webp?v=1787634834",
         "title": "Self-improvement",
         "description": "自强不息\n“風立ちぬ、いざ生きめやも”——纵有疾风起，人生不言弃"
       },
       {
-        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_161153_3626.webp?v=1787489356",
+        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260818_161153_3626.webp?v=1787634822",
         "title": "Freedom",
         "description": "自由\nA lifetime of running toward freedom.\n穷极一生，做个自由的人"
       },
       {
-        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_112139_2285.webp?v=1787489366",
+        "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_112139_2285.webp?v=1787634834",
         "title": "「飛べ」",
         "description": "飞吧！\nAlways look up.\n要永远向上看"
       }
     ],
     "hero07": {
-      "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_094244_9492.webp?v=1787489365",
+      "image": "https://zjy0429-1471879169.cos.ap-shanghai.myqcloud.com/images/uploads/u_20260819_094244_9492.webp?v=1787634834",
       "tagline": "Freedom·diligence·unremitting self-improvement",
       "title": "每一次记录，都是未来的你在回首",
       "description": "“正因为没有翅膀，人们才去寻找飞翔的方法。” —— 乌养一繫"
