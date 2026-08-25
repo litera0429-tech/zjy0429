@@ -314,10 +314,32 @@ def unreferenced_uploads(final_refs):
         for f in sorted(names):
             if not f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
                 continue
+            if f.lower().endswith(".lqip.webp"):
+                continue  # 低质量占位图由对应原图生成，不算“未引用”
             p = os.path.relpath(os.path.join(dirpath, f), ROOT).replace(os.sep, "/")
             if p not in ref_set:
                 found.append(p)
     return found
+
+
+def make_lqip(ref, dry_run):
+    """为图片生成 24px WebP 低质量占位图：<同名>.lqip.webp。"""
+    src = os.path.join(ROOT, ref)
+    if not os.path.exists(src) or os.path.splitext(ref)[1].lower() in (".gif", ".mp4"):
+        return
+    base = os.path.splitext(ref)[0]
+    out = os.path.join(ROOT, base + ".lqip.webp")
+    if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(src):
+        return
+    if dry_run:
+        return
+    try:
+        from PIL import Image, ImageOps
+        im = ImageOps.exif_transpose(Image.open(src))
+        im.thumbnail((24, 24), Image.LANCZOS)
+        im.save(out, "WEBP", quality=25, method=4)
+    except Exception:
+        pass
 
 
 def git_publish(dry_run):
@@ -504,6 +526,10 @@ def main():
         print("[JSON] 有 %d 处引用已转 WebP/改地址，works.json / site.json 已同步" % len(changed_refs))
 
     final_refs = [ref_map[r] for r in refs]
+    if not dry_run:
+        for ref in final_refs:
+            make_lqip(ref, dry_run)
+    print("[LQIP] 低质量占位图已生成/更新" if not dry_run else "[LQIP] 预览：将生成占位图")
 
     stale = unreferenced_uploads(final_refs)
     if stale:

@@ -319,8 +319,26 @@
       d.setAttribute("aria-label", "第 " + (i + 1) + " 张，共 " + count + " 张");
       var img = document.createElement("img");
       img.src = s.src;
+      var enc = encodeURIComponent("/" + s.src);
+      img.srcset = [480, 800, 1200]
+        .map(function (w) {
+          return "/.netlify/images?url=" + enc + "&w=" + w + " " + w + "w";
+        })
+        .join(", ");
+      img.sizes = "(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw";
+      var lm = s.src.match(/^(.+?)(\?v=\d+)?$/);
+      var lq = lm[1].replace(/\.(webp|jpe?g|png|gif)$/i, ".lqip.webp") + (lm[2] || "");
+      img.setAttribute(
+        "style",
+        'background-image:url("' + lq + '");background-size:cover;background-position:center;'
+      );
       img.alt = s.alt || "";
       img.draggable = false;
+      if (i > 0) {
+        img.loading = "lazy";
+      } else {
+        img.setAttribute("fetchpriority", "high");
+      }
       d.appendChild(img);
       d.addEventListener("click", function () {
         if (justDragged) return;
