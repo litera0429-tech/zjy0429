@@ -295,6 +295,91 @@ button {
 
 }
 
+@media (max-width: 640px) {
+  .site-header {
+    padding: 0 18px;
+    height: 56px;
+  }
+
+  .brand {
+    font-size: 19px;
+  }
+
+  .nav-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .site-nav {
+    gap: 16px;
+    padding: 72px 24px 40px;
+  }
+
+  .site-nav a,
+  .site-nav .nav-switch {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-nav a {
+    padding: 10px 16px;
+    font-size: 17px;
+  }
+
+  .hero-pin {
+    height: 135svh;
+  }
+
+  .hero {
+    height: 100svh;
+    min-height: 560px;
+  }
+
+  .hero-copy {
+    padding: 0 20px 84px;
+  }
+
+  .hero-title {
+    font-size: clamp(54px, 16vw, 76px);
+  }
+
+  .hero-kicker {
+    margin-top: 10px;
+    font-size: 10px;
+    letter-spacing: 0.26em;
+  }
+
+  .hero-foot {
+    bottom: 24px;
+  }
+
+  .hero-link {
+    min-height: 44px;
+    padding: 10px 0;
+    font-size: 10px;
+  }
+
+  .hero-scroll {
+    display: none;
+  }
+
+  .site-footer {
+    padding: 28px 20px 20px;
+  }
+
+  .footer-cols {
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .footer-copy {
+    line-height: 1.6;
+  }
+}
+
 /* ---------- Home hero ---------- */
 
 /* 封面滚动显现：视频固定全屏，标题随下滑丝滑浮现 */
@@ -876,11 +961,16 @@ button {
 @media (max-width: 640px) {
   .lb-stage {
     height: 66vh;
+    contain: paint;
   }
 
   .lb-nav {
     font-size: 30px;
     padding: 12px;
+  }
+
+  .lb-img {
+    will-change: opacity, transform;
   }
 }
 
@@ -1356,6 +1446,142 @@ button {
 .imm-item:focus img {
   transform: scale(1.05);
   opacity: 0.85;
+}
+
+/* ---------- 足迹页：移动端吸顶目录与完整缩略图弹层 ---------- */
+@media (max-width: 640px) {
+  .im-shelf {
+    padding: 64px 0 88px;
+  }
+
+  .im-grid {
+    gap: 0;
+  }
+
+  .im-side {
+    position: sticky;
+    top: 56px;
+    z-index: 45;
+    padding: 12px 20px 10px;
+    background: var(--bar-bg);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    transition: padding 0.22s ease, background-color 0.5s ease;
+  }
+
+  .im-kicker {
+    max-height: 24px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    opacity: 1;
+    transform: none;
+    transition: max-height 0.22s ease, margin 0.22s ease,
+      opacity 0.18s ease, transform 0.22s ease;
+  }
+
+  .im-side.is-compact {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .im-side.is-compact .im-kicker {
+    max-height: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  .im-menu {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .im-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .im-menu-item {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 44px;
+    gap: 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+  }
+
+  .im-menu-item .im-dot {
+    display: none;
+  }
+
+  .im-menu-item.active {
+    margin-left: 0;
+    border-left-color: transparent;
+    border-bottom-color: var(--text);
+  }
+
+  .im-content {
+    gap: 176px;
+    padding: 52px 20px 0;
+  }
+
+  .im-proj {
+    scroll-margin-top: 122px;
+  }
+
+  .im-proj-head {
+    margin-bottom: 52px;
+  }
+
+  .im-proj-figure {
+    padding-top: 72px;
+  }
+
+  .im-more-modal {
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .imm-panel {
+    width: 100%;
+    height: min(86dvh, 720px);
+    max-height: none;
+  }
+
+  .imm-close {
+    width: 44px;
+    height: 44px;
+    top: 4px;
+    right: 6px;
+  }
+
+  .imm-head {
+    flex: 0 0 auto;
+    min-height: 64px;
+    padding: 18px 56px 14px 16px;
+  }
+
+  .imm-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 10px;
+    padding: 12px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .imm-item {
+    aspect-ratio: 1 / 1;
+  }
 }
 
 

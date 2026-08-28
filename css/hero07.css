@@ -271,3 +271,32 @@
     transition: none;
   }
 }
+
+@media (max-width: 639px) {
+  .zz-hero07 {
+    padding-top: 76px;
+  }
+
+  .zz-hero07-media-inner {
+    aspect-ratio: 5 / 4;
+  }
+
+  .zz-hero07-grid {
+    padding: 1.5rem 20px 6rem;
+    gap: 1.75rem;
+  }
+
+  .zz-hero07-title {
+    font-size: 1.75rem;
+  }
+
+  .zz-hero07-desc {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .zz-hero07-btn-primary {
+    min-height: 44px;
+    padding: 0.625rem 1.25rem;
+  }
+}

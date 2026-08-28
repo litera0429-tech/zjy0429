@@ -840,6 +840,25 @@
     var lbList = [];
     var lbIndex = 0;
     var touchX = 0;
+    var lbTimer = null;
+
+    function isMobileLightbox() {
+      return window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+    }
+
+    function lightboxSrc(src) {
+      return zzProcess(src, isMobileLightbox() ? 1280 : 1920, isMobileLightbox() ? 74 : 80);
+    }
+
+    function preloadLightboxNeighbors() {
+      if (!isMobileLightbox() || lbList.length < 2) return;
+      [-1, 1].forEach(function (delta) {
+        var next = (lbIndex + delta + lbList.length) % lbList.length;
+        var preload = new Image();
+        preload.decoding = "async";
+        preload.src = lightboxSrc(lbList[next].src);
+      });
+    }
 
     function openLightbox(index, list) {
       if (!lb) return;
@@ -876,10 +895,12 @@
     function setLightbox(animate) {
       var work = lbList[lbIndex];
       if (!work) return;
+      if (lbTimer) window.clearTimeout(lbTimer);
       if (animate) lbImg.classList.add("leaving");
-      window.setTimeout(
+      lbTimer = window.setTimeout(
         function () {
-          lbImg.src = zzProcess(work.src, 1920, 80);
+          lbImg.decoding = "async";
+          lbImg.src = lightboxSrc(work.src);
           lbImg.alt = work.title;
           if (lbTitle) lbTitle.textContent = work.title;
           if (lbMeta) {
@@ -889,8 +910,10 @@
           }
           if (lbCount) lbCount.textContent = lbIndex + 1 + " / " + lbList.length;
           lbImg.classList.remove("leaving");
+          lbTimer = null;
+          preloadLightboxNeighbors();
         },
-        animate ? 200 : 0
+        animate ? (isMobileLightbox() ? 140 : 200) : 0
       );
     }
 
@@ -962,6 +985,30 @@
 
     var works = [];
     var sections = [];
+    var immersiveSide = document.querySelector("#immersive .im-side");
+    var immersiveMenuStart = 0;
+
+    function syncImmersiveMenu() {
+      if (!immersiveSide) return;
+      var mobile = window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+      immersiveSide.classList.toggle(
+        "is-compact",
+        mobile && window.scrollY > immersiveMenuStart + 12
+      );
+    }
+
+    if (immersiveSide) {
+      window.requestAnimationFrame(function () {
+        immersiveMenuStart = window.scrollY + immersiveSide.getBoundingClientRect().top;
+        syncImmersiveMenu();
+      });
+      window.addEventListener("scroll", syncImmersiveMenu, { passive: true });
+      window.addEventListener("resize", function () {
+        immersiveSide.classList.remove("is-compact");
+        immersiveMenuStart = window.scrollY + immersiveSide.getBoundingClientRect().top;
+        syncImmersiveMenu();
+      });
+    }
 
     /* 首页画廊点击放大（大图查看，与参考站一致） */
     var lb = document.getElementById("lightbox");
@@ -1029,7 +1076,16 @@
         btn.className = "imm-item";
         btn.setAttribute("aria-label", "查看大图 " + (j + 1));
         var img = document.createElement("img");
-        img.src = src;
+        var mobileThumb =
+          window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+        if (mobileThumb) {
+          img.src = zzProcess(src, 640, 74);
+          img.srcset = zzSrcset(src, [320, 480, 640]);
+          img.sizes = "50vw";
+          img.decoding = "async";
+        } else {
+          img.src = src;
+        }
         img.alt = work.title + " " + (j + 1);
         img.loading = "lazy";
         img.draggable = false;

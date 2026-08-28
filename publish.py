@@ -371,7 +371,7 @@ def git_publish(dry_run):
     files = [
         "content", "netlify.toml", "publish.py", "server.py",
         "index.html", "about.html", "business.html", "footprint.html",
-        "portfolio.html", "preview-coverflow.html", "404.html", "js",
+        "portfolio.html", "preview-coverflow.html", "404.html", "css", "js",
     ]
     if dry_run:
         print("[预览] git 将提交：%s" % ", ".join(files))

@@ -141,3 +141,30 @@
     transform: none;
   }
 }
+
+@media (max-width: 767px) {
+  .zz-scroll01 {
+    padding: 96px 20px;
+  }
+
+  .zz-scroll01-mobile {
+    gap: 3rem;
+  }
+
+  .zz-scroll01-card {
+    gap: 0.875rem;
+  }
+
+  .zz-scroll01-card-img {
+    height: min(68vw, 300px);
+    border-radius: 0.75rem;
+  }
+
+  .zz-scroll01-title {
+    font-size: 1.375rem;
+  }
+
+  .zz-scroll01-desc {
+    font-size: 0.9375rem;
+  }
+}

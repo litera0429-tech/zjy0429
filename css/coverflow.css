@@ -176,3 +176,52 @@
     opacity: 1;
   }
 }
+
+/* ---------- 移动端：放大主卡片，减少无效留白 ---------- */
+@media (max-width: 640px) {
+  .cf-section {
+    padding: 112px 0 72px;
+  }
+
+  .cf-head {
+    margin-bottom: 28px;
+    padding: 0 20px;
+  }
+
+  .cf-head-title {
+    font-size: 18px;
+  }
+
+  .cf-head-sub {
+    margin-top: 6px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .cf-stage {
+    --cf-card: min(86vw, 348px);
+  }
+
+  .cf-frame {
+    padding: 20px 0;
+  }
+
+  .cf-caption {
+    min-height: 112px;
+    margin-top: 14px;
+    padding: 0 20px;
+  }
+
+  .cf-title {
+    font-size: 17px;
+  }
+
+  .cf-subtitle {
+    font-size: 14px;
+  }
+
+  .cf-meta {
+    margin-top: 22px;
+    font-size: 13px;
+  }
+}
