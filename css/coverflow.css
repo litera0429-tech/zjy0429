@@ -179,8 +179,9 @@
 
 /* ---------- 移动端：放大主卡片，减少无效留白 ---------- */
 @media (max-width: 640px) {
+  /* 移动端：封面（视频）与 RECOMMEND 之间留出更大的呼吸距离 */
   .cf-section {
-    padding: 112px 0 72px;
+    padding: 208px 0 84px;
   }
 
   .cf-head {

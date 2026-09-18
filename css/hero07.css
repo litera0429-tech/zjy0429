@@ -273,12 +273,14 @@
 }
 
 @media (max-width: 639px) {
+  /* 移动端：与上方轮播拉开更大距离 */
   .zz-hero07 {
-    padding-top: 76px;
+    padding-top: 148px;
   }
 
+  /* 移动端：整幅大图放大（更竖构图），视觉冲击更强 */
   .zz-hero07-media-inner {
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 4 / 5;
   }
 
   .zz-hero07-grid {

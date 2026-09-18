@@ -1021,6 +1021,7 @@
     var lbWorkTitle = "";
     var lbWorkCat = "";
     var lbWorkDesc = "";
+    var lbFullToken = 0;
 
     var moreModal = document.getElementById("imMoreModal");
     var moreGrid = document.getElementById("imMoreGrid");
@@ -1028,25 +1029,91 @@
     var moreCount = document.getElementById("imMoreCount");
     var moreClose = document.getElementById("imMoreClose");
 
-    function homeSetLightbox() {
+    function isMobileLb() {
+      return window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+    }
+
+    /* 移动端大图：1920 长边 + q78（清晰度足够，体积比 q80 更轻） */
+    function homeLbFullSrc(src) {
+      return isMobileLb() ? zzProcess(src, 1920, 78) : zzProcess(src, 1920, 80);
+    }
+
+    /* 「查看更多」缩略图同一地址：点开时可直接命中缓存，实现点击即放大 */
+    function homeLbThumbSrc(src) {
+      return zzProcess(src, 640, 74);
+    }
+
+    /* 预加载左右相邻大图：滑动切换时无需等待网络 */
+    function homePreloadLbNeighbors() {
+      if (!isMobileLb() || lbList.length < 2) return;
+      [-1, 1].forEach(function (delta) {
+        var i = (lbIndex + delta + lbList.length) % lbList.length;
+        var im = new Image();
+        im.decoding = "async";
+        im.src = homeLbFullSrc(lbList[i]);
+      });
+    }
+
+    function homeSetLightbox(placeholderSrc) {
       if (!lbImg || !lbList.length) return;
-      lbImg.src = zzProcess(lbList[lbIndex], 1920, 80);
-      lbImg.alt = lbWorkTitle;
+      var src = lbList[lbIndex];
+      var full = homeLbFullSrc(src);
+      lbFullToken += 1;
+      var token = lbFullToken;
+
       if (lbTitle) lbTitle.textContent = lbWorkTitle;
       if (lbMeta) {
         lbMeta.textContent = lbWorkCat + (lbWorkDesc ? " · " + lbWorkDesc : "");
       }
       if (lbCount) lbCount.textContent = lbIndex + 1 + " / " + lbList.length;
+      lbImg.alt = lbWorkTitle;
+
+      /* 桌面端：沿用原有直出大图的行为 */
+      if (!isMobileLb()) {
+        lbImg.classList.remove("lb-pending");
+        lbImg.style.transform = "";
+        lbImg.style.opacity = "";
+        lbImg.src = full;
+        return;
+      }
+
+      /* 移动端：先用已缓存的小图占位（点击即放大），高清解码完成后再无缝替换变清晰 */
+      var low = placeholderSrc || homeLbThumbSrc(src);
+      lbImg.decoding = "async";
+      lbImg.classList.add("lb-pending");
+      if (low && lbImg.getAttribute("src") !== low) lbImg.setAttribute("src", low);
+
+      var hi = new Image();
+      hi.decoding = "async";
+      function promote() {
+        if (token !== lbFullToken) return;
+        lbImg.src = full;
+        lbImg.classList.remove("lb-pending");
+        homePreloadLbNeighbors();
+      }
+      hi.onload = function () {
+        if (hi.decode) hi.decode().then(promote, promote);
+        else promote();
+      };
+      hi.onerror = function () {
+        if (token !== lbFullToken) return;
+        /* 高清图失败：退回原图地址，至少保证看得清 */
+        if (lbImg.getAttribute("src") !== src) lbImg.src = src;
+        lbImg.classList.remove("lb-pending");
+      };
+      hi.src = full;
     }
 
-    function homeOpenLightbox(list, index, work) {
+    function homeOpenLightbox(list, index, work, placeholderSrc) {
       if (!lb) return;
       lbList = list;
       lbIndex = index;
       lbWorkTitle = work.title || "";
       lbWorkCat = work.category || "";
       lbWorkDesc = work.description || "";
-      homeSetLightbox();
+      homeResetSwipe();
+      homeSetLightbox(placeholderSrc);
+      if (lbImg) lbImg.alt = lbWorkTitle;
       lb.classList.add("open");
       lb.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -1091,7 +1158,7 @@
         img.draggable = false;
         btn.appendChild(img);
         btn.addEventListener("click", function () {
-          homeOpenLightbox(list, j, work);
+          homeOpenLightbox(list, j, work, img.currentSrc || img.src);
         });
         moreGrid.appendChild(btn);
       });
@@ -1139,6 +1206,118 @@
         homeCloseMore();
       }
     });
+
+    /* ---------- 移动端：左右滑动切换大图（跟手拖动 + 松手翻页） ---------- */
+    var swipeStartX = 0;
+    var swipeStartY = 0;
+    var swipeDx = 0;
+    var swipeAxis = "";
+    var swiping = false;
+
+    function homeResetSwipe() {
+      swiping = false;
+      swipeAxis = "";
+      swipeDx = 0;
+      if (!lbImg) return;
+      lbImg.style.transition = "";
+      lbImg.style.transform = "";
+      lbImg.style.opacity = "";
+    }
+
+    function homeSwipeStart(e) {
+      if (!isMobileLb() || !lb || !lb.classList.contains("open")) return;
+      if (!e.touches || e.touches.length !== 1) return;
+      swipeStartX = e.touches[0].clientX;
+      swipeStartY = e.touches[0].clientY;
+      swipeDx = 0;
+      swipeAxis = "";
+      swiping = true;
+      lbImg.style.transition = "none";
+      lbImg.style.transform = "";
+      lbImg.style.opacity = "";
+    }
+
+    function homeSwipeMove(e) {
+      if (!swiping || !e.touches || e.touches.length !== 1) return;
+      var dx = e.touches[0].clientX - swipeStartX;
+      var dy = e.touches[0].clientY - swipeStartY;
+      if (!swipeAxis) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        swipeAxis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+      if (swipeAxis !== "x") {
+        /* 竖向手势交回浏览器，不做横向跟手 */
+        if (swiping) homeResetSwipe();
+        return;
+      }
+      if (e.cancelable) e.preventDefault();
+      swipeDx = dx;
+      var width = lb.offsetWidth || window.innerWidth || 390;
+      lbImg.style.transform = "translate3d(" + dx + "px, 0, 0)";
+      lbImg.style.opacity = String(Math.max(0.45, 1 - Math.abs(dx) / width));
+    }
+
+    function homeSwipeEnd() {
+      if (!swiping) return;
+      swiping = false;
+      if (swipeAxis !== "x") {
+        homeResetSwipe();
+        return;
+      }
+      var width = lb.offsetWidth || window.innerWidth || 390;
+      var limit = Math.min(110, width * 0.16);
+      var dx = swipeDx;
+      swipeAxis = "";
+      swipeDx = 0;
+      if (Math.abs(dx) > limit) {
+        homeSwipeCommit(dx < 0 ? 1 : -1);
+      } else {
+        lbImg.style.transition = "";
+        lbImg.style.transform = "translate3d(0, 0, 0)";
+        lbImg.style.opacity = "";
+        window.setTimeout(function () {
+          if (!swiping) lbImg.style.transform = "";
+          lbImg.style.opacity = "";
+        }, 220);
+      }
+    }
+
+    /* 翻页：当前图滑出 → 立刻换上相邻大图（已预加载）→ 从另一侧回位 */
+    function homeSwipeCommit(dir) {
+      if (!lbImg) return;
+      var width = lb.offsetWidth || window.innerWidth || 390;
+      var outX = dir > 0 ? -width : width;
+      lbImg.style.transition = "transform 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s linear";
+      lbImg.style.transform = "translate3d(" + outX + "px, 0, 0)";
+      lbImg.style.opacity = "0";
+      window.setTimeout(function () {
+        homeStep(dir);
+        lbImg.style.transition = "none";
+        lbImg.style.transform = "translate3d(" + (-outX * 0.32) + "px, 0, 0)";
+        lbImg.style.opacity = "0";
+        window.requestAnimationFrame(function () {
+          lbImg.style.transition =
+            "transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease";
+          lbImg.style.transform = "translate3d(0, 0, 0)";
+          lbImg.style.opacity = "";
+          window.setTimeout(function () {
+            lbImg.style.transition = "";
+            lbImg.style.transform = "";
+            lbImg.style.opacity = "";
+          }, 260);
+        });
+      }, 190);
+    }
+
+    if (lb) {
+      lb.addEventListener("touchstart", homeSwipeStart, { passive: true });
+      lb.addEventListener("touchmove", homeSwipeMove, { passive: false });
+      lb.addEventListener("touchend", homeSwipeEnd, { passive: true });
+      lb.addEventListener("touchcancel", function () {
+        swiping = false;
+        homeResetSwipe();
+      }, { passive: true });
+    }
 
     function setActive(i) {
       menu.querySelectorAll(".im-menu-item").forEach(function (btn, idx) {
@@ -1226,7 +1405,7 @@
 
         sec.querySelectorAll(".im-track-img").forEach(function (img, j) {
           img.addEventListener("click", function () {
-            homeOpenLightbox(imgs, j, work);
+            homeOpenLightbox(imgs, j, work, img.currentSrc || img.src);
           });
         });
 
